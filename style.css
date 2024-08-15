@@ -1,0 +1,225 @@
+/*<?xml version="1.0" encoding="utf-8"?>*/
+
+* {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  font: 100% Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+}
+
+body {
+  background-color: white;
+  color: black;
+  padding: 10px;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+table.no-javascript {
+  display: none;
+}
+
+td {
+  padding: 4px 5px 4px 5px;
+  white-space: nowrap;
+}
+
+td.left {
+  padding: 0 5px 0 0;
+  vertical-align: top;
+  width: 1px;
+}
+
+td.top {
+  height: 1px;
+  padding: 0 5px 0 5px;
+  vertical-align: top;
+  width: 512px;
+}
+
+td.canvas {
+  height: 512px;
+  min-height: 512px;
+  min-width: 1034px;
+  padding: 10px 5px 10px 5px;
+  width: 1034px;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+h1,
+h2 {
+  text-align: center;
+}
+
+h2,
+h3 {
+  margin-bottom: 10px;
+  margin-top: 15px;
+}
+
+h1 {
+  font-size: 1.6em;
+  margin-bottom: 10px;
+  margin-top: 0px;
+}
+
+h2 {
+  font-size: 1.25em;
+}
+
+h3 {
+  font-size: 1em;
+  margin-left: 6px;
+}
+
+div.control {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  color: inherit;
+  padding-bottom: 1px;
+  padding-top: 1px;
+}
+
+td.left div.control {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+table.control-left {
+  width: 100%;
+}
+
+table.control-left > tbody > tr > td:first-child,
+table.control-left > tbody > tr > td:nth-child(2) {
+  width: 1px;
+}
+
+input,
+label,
+p,
+select,
+textarea {
+  display: block;
+  font-size: 0.85em;
+}
+
+input.disabled,
+select.disabled,
+textarea.disabled {
+  opacity: 0.5;
+}
+
+label.disabled {
+  background-color: inherit;
+  color: #aaa;
+}
+
+input[type=range]{
+  width: 145px;
+}
+
+input[type=radio]{
+  margin-left: 7px;
+}
+
+select {
+  background-color: white;
+  border: 1px solid #ccc;
+  color: inherit;
+}
+
+select#select-image {
+  width: 140px;
+}
+
+select#left-panel,
+select#right-panel {
+  width: 250px;
+}
+
+label.title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+label.unit {
+  font-size: 0.75em;
+  text-align: right;
+}
+
+label.value {
+  text-align: right;
+  width: 4ch;
+}
+
+table.slider-ticks {
+  margin: 0 0 0 -6px;
+}
+
+table#slider-ticks-25,
+table#slider-ticks-50 {
+  display: none;
+}
+
+table#slider-ticks-100 {
+  display: table;
+}
+
+table.slider-ticks td {
+  padding: 0;
+}
+
+table.slider-ticks label {
+  font-size: 0.65em;
+  text-align: center;
+  width: 26px;
+}
+
+td.slider-range {
+  padding-top: 5px;
+}
+
+td.slider-range input,
+td.slider-range label {
+  display: inline-block;
+}
+
+p.error {
+  background-color: inherit;
+  color: red;
+  line-height: 140%;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  text-align: justify;
+  white-space: normal;
+}
+
+textarea {
+  background-color: inherit;
+  color: blue;
+  line-height: 140%;
+  margin-top: 10px;
+  overflow: hidden;
+  resize: none;
+  text-align: justify;
+  white-space: normal;
+  width: 100%;
+}
+
+canvas {
+  display: none;
+}
