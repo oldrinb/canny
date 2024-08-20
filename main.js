@@ -1,4 +1,18 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
+/*
+This application implements The Canny edge detection algorithm, implemented
+using GLSL shaders. It consists of the following basic steps:
+1. Image smoothing with a Gaussian filter.
+2. Gradient magnitude and direction.
+3. Non-maxima suppression.
+4. Hysteresis thresholding.
+5. Edge linking.
+
+[1] Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing,
+    3rd edition", p. 741-747, 2008
+[2] Wikipedia. Canny edge detector,
+    https://en.wikipedia.org/wiki/Canny_edge_detector
+*/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
 const IMAGE_PATH = "../common-files/images/";
@@ -17,8 +31,8 @@ const IMAGES = [["blurry-moon512", "png", "Blurry Moon", "bw"],
 
 const MODES = {INPUT: [0, "Input image"], 
                SMOOTHING: [1, "Step 1: Gaussian smoothing"],
-               GRADIENT: [2, "Step 2: Magnitude of gradient"],
-               NON_MAXIMUM: [3, "Step 3: Non-maximum suppression"],
+               GRADIENT: [2, "Step 2: Gradient magnitude"],
+               NON_MAXIMA: [3, "Step 3: Non-maxima suppression"],
                THRESHOLDING: [4, "Step 4: Hysteresis thresholding"],
                EDGE_LINKING: [5, "Step 5: Edge linking"]};
 
@@ -130,12 +144,12 @@ function init() {
 async function render(paramChanged) {
   try{
     if (paramChanged) {
-      computeSmoothing();
-      computeGradient();
-      computeNonMaximum();
-      computeThresholding();
+      computeSmoothing();// Step 1. Image smoothing
+      computeGradient();// Step 2. Gradient magnitude and direction
+      computeNonMaxima();// Step 3. Non-maxima suppression
+      computeThresholding();// Step 4. Double thresholding
+      computeEdgeLinking()// Step 5. Edge linking
 
-      computeEdgeLinking()
       .then(function() {
         renderScene();
 
@@ -309,6 +323,7 @@ function setRightOverlay(event) {
 
 
 
+// Display final images to the screen.
 function renderScene() {
   let leftTexture = textures_[currentImage_];
   let rightTexture = textures_[currentImage_];
@@ -316,6 +331,7 @@ function renderScene() {
   let isLeftColor = IMAGES[currentImage_][3] == "color";
   let isRightColor = IMAGES[currentImage_][3] == "color";
 
+  // Select which image to display in the left panel.
   switch (currentLeftMode_) {
     case Object.keys(MODES) [MODES.SMOOTHING[0]]:
       leftTexture = smoothingFramebuffer_;
@@ -324,7 +340,7 @@ function renderScene() {
       leftTexture = gradientFramebuffer_;
       isLeftColor = false;
       break;
-    case Object.keys(MODES) [MODES.NON_MAXIMUM[0]]:
+    case Object.keys(MODES) [MODES.NON_MAXIMA[0]]:
       leftTexture = nonMaxFramebuffer_;
       isLeftColor = false;
       break;
@@ -339,6 +355,7 @@ function renderScene() {
       }
   }
 
+  // Select which image to display in the right panel.
   switch (currentRightMode_) {
     case Object.keys(MODES) [MODES.SMOOTHING[0]]:
       rightTexture = smoothingFramebuffer_;
@@ -347,7 +364,7 @@ function renderScene() {
       rightTexture = gradientFramebuffer_;
       isRightColor = false;
       break;
-    case Object.keys(MODES) [MODES.NON_MAXIMUM[0]]:
+    case Object.keys(MODES) [MODES.NON_MAXIMA[0]]:
       rightTexture = nonMaxFramebuffer_;
       isRightColor = false;
       break;
@@ -365,10 +382,11 @@ function renderScene() {
   shaderManager_.setLeftColorMode(isLeftColor);
   shaderManager_.setRightColorMode(isRightColor);
 
+  // Render to the screen.
   gl_.viewport(0, 0, canvas_.width, canvas_.height);
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.MAIN, quad_, [leftTexture, 0],
-      [rightTexture, 0], [edgeTexture, 0]);
+  shaderManager_.render(shaderManager_.MAIN, quad_,
+      [leftTexture, 0], [rightTexture, 0], [edgeTexture, 0]);
 }
 
 
@@ -403,55 +421,65 @@ function updateTexture() {
 
 
 
+// Step 1. Image smoothing with a Gaussian filter.
+// This is accomplished by convolving the image with a 1-D kernel in the
+// horizontal direction, then convolving the result with a 1-D kernel in the
+// vertical direction, using the separability property of the Gaussian.
 function computeSmoothing() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
   shaderManager_.setInputColorMode(IMAGES[currentImage_][3] == "color");
 
+  // Convert the image into a 16 bit format
   framebuffer1_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.ENCODING, quad_,
-      [textures_[currentImage_], 0], [], []);
+  shaderManager_.render
+      (shaderManager_.ENCODING, quad_, [textures_[currentImage_], 0], [], []);
   framebuffer1_.stopDrawing();
-
+  
+  // Convolution in the horizontal direction.
   framebuffer2_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
   shaderManager_.setVerticalSmoothing(false);
-  shaderManager_.render(shaderManager_.SMOOTHING, quad_, [framebuffer1_, 0],
-      [framebuffer1_, 1], []);
+  shaderManager_.render(shaderManager_.SMOOTHING, quad_,
+      [framebuffer1_, 0], [framebuffer1_, 1], []);
   framebuffer2_.stopDrawing();
 
+  // Convolution in the vertical direction.
   framebuffer1_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
   shaderManager_.setVerticalSmoothing(true);
-  shaderManager_.render(shaderManager_.SMOOTHING, quad_, [framebuffer2_, 0],
-      [framebuffer2_, 1], []);
+  shaderManager_.render(shaderManager_.SMOOTHING, quad_,
+      [framebuffer2_, 0], [framebuffer2_, 1], []);
   framebuffer1_.stopDrawing();
 
   shaderManager_.setOutputColorMode(IMAGES[currentImage_][3] == "color");
   shaderManager_.setOutputRange([0, 1]);
 
+  // Converting into a 8 bit image, in order to be displayed on the screen.
   smoothingFramebuffer_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.DECODING, quad_, [framebuffer1_, 0],
-      [framebuffer1_, 1], []);
+  shaderManager_.render(shaderManager_.DECODING, quad_,
+      [framebuffer1_, 0], [framebuffer1_, 1], []);
   smoothingFramebuffer_.stopDrawing();
 }
 
 
 
+// Step 2. Computing the gradient magnitude and direction.
 function computeGradient() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
   shaderManager_.setInputColorMode(IMAGES[currentImage_][3] == "color");
 
   framebuffer3_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.GRADIENT, quad_, [framebuffer1_, 0],
-      [framebuffer1_, 1], []);
+  shaderManager_.render(shaderManager_.GRADIENT, quad_,
+      [framebuffer1_, 0], [framebuffer1_, 1], []);
   framebuffer3_.stopDrawing();
 
   let pixels1 = framebuffer3_.readPixels(0);
   let pixels2 = framebuffer3_.readPixels(1);
 
+  // Maximum value of the gradient
   let max = 0;
   for (let i = 0; i < pixels1.length; i++) {
     let value = pixels1[i] * 256 + pixels2[i];
@@ -461,31 +489,34 @@ function computeGradient() {
     if (value > max) max = value;
   }
   maxGradient_ = max;
-
+  
   shaderManager_.setOutputColorMode(false);
   shaderManager_.setOutputRange([FLOAT_MIN_VALUE, maxGradient_]);
 
+  // Converting into a 8 bit image, in order to be displayed on the screen.
   gradientFramebuffer_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.DECODING, quad_, [framebuffer3_, 0],
-      [framebuffer3_, 1], []);
+  shaderManager_.render(shaderManager_.DECODING, quad_,
+      [framebuffer3_, 0], [framebuffer3_, 1], []);
   gradientFramebuffer_.stopDrawing();
 }
 
 
 
-function computeNonMaximum() {
+// Step 3. Non-maxima suppression
+function computeNonMaxima() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
   framebuffer4_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.NON_MAXIMUM, quad_, [framebuffer3_, 0],
+  shaderManager_.render(shaderManager_.NON_MAXIMA, quad_, [framebuffer3_, 0],
       [framebuffer3_, 1], [framebuffer3_, 2]);
   framebuffer4_.stopDrawing();
 
   shaderManager_.setOutputColorMode(false);
   shaderManager_.setOutputRange([FLOAT_MIN_VALUE, maxGradient_]);
 
+  // Converting into a 8 bit image, in order to be displayed on the screen.
   nonMaxFramebuffer_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
   shaderManager_.render(shaderManager_.DECODING, quad_, [framebuffer4_, 0],
@@ -495,14 +526,15 @@ function computeNonMaximum() {
 
 
 
+// Step 4. Hysteresis thresholding
 function computeThresholding() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
   framebuffer5_.startDrawing();
   gl_.clear(gl_.COLOR_BUFFER_BIT);
   shaderManager_.setMaxGradient(maxGradient_);
-  shaderManager_.render(shaderManager_.THRESHOLDING, quad_, [framebuffer4_, 0],
-      [framebuffer4_, 1], []);
+  shaderManager_.render(shaderManager_.THRESHOLDING, quad_,
+      [framebuffer4_, 0], [framebuffer4_, 1], []);
   framebuffer5_.stopDrawing();
 
   thresholdingFramebuffer_.copy(framebuffer5_);
@@ -510,6 +542,7 @@ function computeThresholding() {
 
 
 
+// Step 5. Edge linking.
 function computeEdgeLinking() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -518,6 +551,8 @@ function computeEdgeLinking() {
       try {
         let i = 0; let texturesEqual = false;
 
+        // Edge linking.
+        // View explanation in the shader 'edge-linking.js'
         do {
           framebuffer6_.startDrawing();
           gl_.clear(gl_.COLOR_BUFFER_BIT);
@@ -537,6 +572,7 @@ function computeEdgeLinking() {
           i++;
         } while (i < numMaxIter_ && !texturesEqual);
 
+        // Clean-up
         edgeLinkingFramebuffer_.startDrawing();
         gl_.clear(gl_.COLOR_BUFFER_BIT);
         shaderManager_.render(shaderManager_.CLEAN_UP, quad_,
@@ -553,12 +589,17 @@ function computeEdgeLinking() {
 
 
 
+// Computing the 1-D Gaussian kernel needed to smooth the image (step 1).
+// As shown in [1], the full smoothing capability of the Gaussian filter is
+// provided by a filter of size 'n', where 'n' is the smallest odd integer
+// greater than or equal to 6 * sigma. The kernel being symetrical, we only
+// need to store half of it, and the middle value.
 function computeGaussianKernel(sigma) {
   let kernel = [];
 
   if (sigma > 0) {
     let c = Math.ceil(6 * sigma);
-    let w = c + (c%2 == 0);
+    let w = c + (c % 2 == 0);
     let halfW = (w - 1) / 2;
 
     let sum = 1;
@@ -570,6 +611,7 @@ function computeGaussianKernel(sigma) {
       kernel[i] = kernel[i] / sum;
   }
   else kernel = [1];
+
   return kernel;
 }
 
@@ -598,6 +640,7 @@ function deleteTextures() {
 function createFramebuffers() {
   let isColor = (IMAGES[currentImage_][3] == "color");
   try {
+    // Framebuffers needed to display images on the screen
     smoothingFramebuffer_ = new Framebuffer([gl_, draw_ext_], isColor,
         IMAGE_WIDTH, IMAGE_HEIGHT, 1, false, false);
     gradientFramebuffer_ = new Framebuffer([gl_, draw_ext_], false, IMAGE_WIDTH,
@@ -609,6 +652,7 @@ function createFramebuffers() {
     edgeLinkingFramebuffer_ = new Framebuffer([gl_, draw_ext_], false,
         IMAGE_WIDTH, IMAGE_HEIGHT, 1, false, false);
 
+    // Framebuffers needed to store intermediate results
     framebuffer1_ = new Framebuffer([gl_, draw_ext_], isColor, IMAGE_WIDTH,
         IMAGE_HEIGHT, 2, false, false);
     framebuffer2_ = new Framebuffer([gl_, draw_ext_], isColor, IMAGE_WIDTH,
