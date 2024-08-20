@@ -24,5 +24,6 @@ References:
 
 [1] Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing,
 3rd edition", p. 741-747, 2008
+
 [2] Wikipedia. Canny edge detector,
 https://en.wikipedia.org/wiki/Canny_edge_detector
