@@ -46,6 +46,7 @@
           <h1>Image processing</h1>
           <h2>Canny edge detector</h2>
 
+          <!-- Image selection -->
           <div class="control">
             <table class="control-left">
               <tr>
@@ -61,6 +62,7 @@
 
           <h3>Parameters:</h3>
 
+          <!-- Gaussian smoothing -->
           <div class="control">
             <table class="control-left">
               <tr>
@@ -104,6 +106,7 @@
             </table>
           </div>
 
+          <!-- Hysteresis thresholding -->
           <div class="control">
             <table class="control-left">
               <tr>
@@ -197,12 +200,14 @@
             </table>
           </div>
 
+          <!-- Display info area -->
           <p class="error"></p>  
           <textarea id="text-info" name="text-info" rows="3"
               readonly="readonly" disabled="disabled">
           </textarea>
         </td>
 
+        <!-- Left step selector -->
         <td class="top">
           <div class="control">
             <table class="control-top">
@@ -224,6 +229,7 @@
           </div>
         </td>
 
+        <!-- Right step selector -->
         <td class="top">
           <div class="control">
             <table class="control-top">
@@ -246,6 +252,7 @@
         </td>
       </tr>
 
+      <!-- Canvas -->
       <tr>
         <td colspan="2" class="canvas">
           <canvas id="gl-canvas" width="1034" height="512"></canvas>
