@@ -1,5 +1,7 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
+/* Interface between the JavaScript 'main.js' file and the 'index.html' file. */
+
 function Html(images, modes) {
   const FULL_RANGE = 100, HALF_RANGE = 50, QUARTER_RANGE = 25;
 
@@ -236,10 +238,10 @@ function Html(images, modes) {
     isSmoothingEnabled_ =
         (leftPanelMode == Object.keys(modes) [modes.SMOOTHING[0]]) ||
         (leftPanelMode == Object.keys(modes) [modes.GRADIENT[0]]) ||
-        (leftPanelMode == Object.keys(modes) [modes.NON_MAXIMUM[0]]) ||
+        (leftPanelMode == Object.keys(modes) [modes.NON_MAXIMA[0]]) ||
         (rightPanelMode == Object.keys(modes) [modes.SMOOTHING[0]]) ||
         (rightPanelMode == Object.keys(modes) [modes.GRADIENT[0]]) ||
-        (rightPanelMode == Object.keys(modes) [modes.NON_MAXIMUM[0]]) ||
+        (rightPanelMode == Object.keys(modes) [modes.NON_MAXIMA[0]]) ||
         isThresholdingEnabled_;
 
     util.enableInputControl(html_.smoothing, isSmoothingEnabled_);
