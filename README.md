@@ -11,7 +11,7 @@ to come from true edges in the image;
 - pixels between the two thresholds are considered 'weak', they are either part
 of an edge, or they come from noise;
 - pixels below the low threshold are discarded.
-It is suggested in [1] that the ratio of the high to low threshold should be two
+It is suggested that the ratio of the high to low threshold should be two
 or three to one.
 5. Edge linking, in order to fill the gaps in the edges determined above.
 'Strong' pixels are assumed to be valid edge points. 'Weak' pixels are
@@ -22,8 +22,5 @@ www.oldrinb.dev/projects/canny
 
 References:
 
-[1] Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing,
-3rd edition", p. 741-747, 2008
-
-[2] Wikipedia. Canny edge detector,
-https://en.wikipedia.org/wiki/Canny_edge_detector
+Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing", 3rd edition,
+p. 741-747, 2008
