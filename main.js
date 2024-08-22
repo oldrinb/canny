@@ -8,10 +8,10 @@ using GLSL shaders. It consists of the following basic steps:
 4. Hysteresis thresholding.
 5. Edge linking.
 
-[1] Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing,
-    3rd edition", p. 741-747, 2008
-[2] Wikipedia. Canny edge detector,
-    https://en.wikipedia.org/wiki/Canny_edge_detector
+References:
+
+Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing, 3rd edition",
+p. 741-747, 2008
 */
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
