@@ -29,237 +29,233 @@
     <script src="shaders/compare-textures.js"></script>
     <script src="shaders/clean-up.js"></script>
     <script src="shaders/shader-manager.js"></script>
+
     <script src="html.js"></script>
     <script src="main.js"></script>
   </head>
 
-  <body onload="init()" onbeforeunload="clean()">
+  <body onload="init()" onbeforeunload="clean()" onresize="resize()">
     <noscript>
+      <h1>Image processing</h1>
+      <h2>Canny edge detector</h2>
       <p class="error">
         This site requires Javascript to work, please enable Javascript in your
             browser or use a browser with Javascript support.
       </p>
     </noscript>
 
-    <table class="no-javascript">
-      <tr>
-        <td rowspan="2" class="left">
+    <div class="main">
+      <div class="left">
+        <div class="left-1">
           <h1>Image processing</h1>
           <h2>Canny edge detector</h2>
 
           <!-- Image selection -->
           <div class="control">
-            <table class="control-left">
-              <tr>
-                <td><label for="select-image">Select image:</label></td>
-                <td>
-                  <select id="select-image" name="select-image"
-                      onchange="selectImage(event)">
-                  </select>
-                </td>
-              </tr>
-            </table>
+            <div>
+              <label for="select-image">Select image:</label>
+              <select id="select-image" name="select-image"
+                  onchange="selectImage(event)">
+              </select>
+            </div>
           </div>
 
+          <div class="hidden">
+            <h3>Step:</h3>
+
+            <!-- Step selector -->
+            <div class="control">
+              <div>
+                <select id="step-main" name="step-main"
+                  onchange="setLeftStepMode(event)">
+                </select>
+              </div>
+              <div>
+                <input type="checkbox" id="overlay-main"
+                  name="overlay-main" onclick="setLeftOverlay(event)">
+                <label for="overlay-main">Overlay</label>
+              </div>
+            </div>
+
+            <!-- Display info area -->
+            <div class="info"><p class="info"></p></div>
+          </div>
+        </div>
+
+        <div class="left-2">
           <h3>Parameters:</h3>
 
           <!-- Gaussian smoothing -->
           <div class="control">
-            <table class="control-left">
-              <tr>
-                <td colspan="3">
-                  <label for="gauss-smoothing" class="title">
-                    Gaussian smoothing
-                  </label>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <input type="range" min="0" max="10" step="0.1" value="0"
-                      id="gauss-smoothing" name="gauss-smoothing"
-                      autocomplete="off" oninput="setSmoothingValue(event)">
-                </td>
-                <td>
-                  <label id="smoothing-value" for="gauss-smoothing"
-                      class="value">0
-                  </label>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>
-                  <table class="slider-ticks">
-                    <tr>
-                      <td><label for="gauss-smoothing">0</label></td>
-                      <td><label for="gauss-smoothing">2</label></td>
-                      <td><label for="gauss-smoothing">4</label></td>
-                      <td><label for="gauss-smoothing">6</label></td>
-                      <td><label for="gauss-smoothing">8</label></td>
-                      <td><label for="gauss-smoothing">10</label></td>
-                    </tr>
-                  </table>
-                </td>
-                <td>
-                  <label for="gauss-smoothing" class="unit">&sigma; [px]</label>
-                </td>
-                <td></td>
-              </tr>
-            </table>
+            <div>
+              <label for="gauss-smoothing" class="title">
+                Gaussian smoothing
+              </label>
+            </div>
+            <div>
+              <input type="range" min="0" max="10" step="0.1" value="0"
+                  id="gauss-smoothing" name="gauss-smoothing"
+                  list="smoothing-ticks" autocomplete="off"
+                  oninput="setSmoothingValue(event)">
+              <datalist id="smoothing-ticks">
+                <option>0</option>
+                <option>2</option>
+                <option>4</option>
+                <option>6</option>
+                <option>8</option>
+                <option>10</option>
+              </datalist>
+              <label id="smoothing-value" for="gauss-smoothing" class="value">
+                0
+              </label>
+              <label for="gauss-smoothing" class="description"></label>
+            </div>
+            <div class="unit">
+              <label for="gauss-smoothing">0</label>
+              <label for="gauss-smoothing">2</label>
+              <label for="gauss-smoothing">4</label>
+              <label for="gauss-smoothing">6</label>
+              <label for="gauss-smoothing">8</label>
+              <label for="gauss-smoothing">10</label>
+              <label for="gauss-smoothing">&sigma; [px]</label>
+            </div>
           </div>
 
           <!-- Hysteresis thresholding -->
           <div class="control">
-            <table class="control-left">
-              <tr>
-                <td colspan="3">
-                  <label for="low-threshold" class="title">
-                    Hysteresis thresholding
-                  </label>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <input type="range" min="0" max="100" step="1" value="0"
-                      id="low-threshold" name="thresholding"
-                      autocomplete="off" oninput="setLowThreshold(event)">
-                </td>
-                <td>
-                  <label id="low-thres-value" for="low-threshold" class="value">
-                    0
-                  </label>
-                </td>
-                <td><label for="low-threshold">low</label></td>
-              </tr>
-              <tr>
-                <td>
-                  <input type="range" min="0" max="100" step="1" value="0"
-                      id="high-threshold" name="thresholding"
-                      autocomplete="off" oninput="setHighThreshold(event)">
-                </td>
-                <td>
-                  <label id="high-thres-value" for="high-threshold"
-                      class="value">0
-                  </label>
-                </td>
-                <td><label for="high-threshold">high</label></td>
-              </tr>
-              <tr>
-                <td>
-                  <table id="slider-ticks-25" class="slider-ticks">
-                    <tr>
-                      <td><label for="low-threshold">0</label></td>
-                      <td><label for="low-threshold">5</label></td>
-                      <td><label for="low-threshold">10</label></td>
-                      <td><label for="low-threshold">15</label></td>
-                      <td><label for="low-threshold">20</label></td>
-                      <td><label for="low-threshold">25</label></td>
-                    </tr>
-                  </table>
-                  <table id="slider-ticks-50" class="slider-ticks">
-                    <tr>
-                      <td><label for="low-threshold">0</label></td>
-                      <td><label for="low-threshold">10</label></td>
-                      <td><label for="low-threshold">20</label></td>
-                      <td><label for="low-threshold">30</label></td>
-                      <td><label for="low-threshold">40</label></td>
-                      <td><label for="low-threshold">50</label></td>
-                    </tr>
-                  </table>
-                  <table id="slider-ticks-100" class="slider-ticks">
-                    <tr>
-                      <td><label for="low-threshold">0</label></td>
-                      <td><label for="low-threshold">20</label></td>
-                      <td><label for="low-threshold">40</label></td>
-                      <td><label for="low-threshold">60</label></td>
-                      <td><label for="low-threshold">80</label></td>
-                      <td><label for="low-threshold">100</label></td>
-                    </tr>
-                  </table>
-                </td>
-                <td><label for="low-threshold" class="unit">%</label></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td colspan="3" class="slider-range">
-                  <label for="slider-range">Range:</label>
-                  <input type="radio" name="slider-range" id="slider-range"
-                      value="" disabled="disabled" style="display: none;">
-                  <input type="radio" name="slider-range"
-                      id="slider-range-25" value="slider-range-25"
-                      onchange="setThresholdRange(event)" checked="checked">
-                  <label for="slider-range-25">0 - 25</label>
-                  <input type="radio" name="slider-range"
-                      id="slider-range-50" value="slider-range-50"
-                      onchange="setThresholdRange(event)">
-                  <label for="slider-range-50">0 - 50</label>
-                  <input type="radio" name="slider-range"
-                      id="slider-range-100" value="slider-range-100"
-                      onchange="setThresholdRange(event)">
-                  <label for="slider-range-100">0 - 100</label>
-                </td>
-              </tr>
-            </table>
+            <div>
+              <label for="low-threshold" class="title">
+                Hysteresis thresholding
+              </label>
+            </div>
+            <div>
+              <input type="range" min="0" max="100" step="1" value="0"
+                id="low-threshold" name="thresholding" list="range-ticks-100"
+                autocomplete="off" oninput="setLowThreshold(event)">
+              <label id="low-thres-value" for="low-threshold" class="value">
+                0
+              </label>
+              <label for="low-threshold" class="description">low</label>
+            </div>
+            <div>
+              <input type="range" min="0" max="100" step="1" value="0"
+                id="high-threshold" name="thresholding" list="range-ticks-100"
+                autocomplete="off" oninput="setHighThreshold(event)">
+              <label id="high-thres-value" for="high-threshold" class="value">
+                0
+              </label>
+              <label for="high-threshold" class="description">high</label>
+            </div>
+            <datalist id="range-ticks-25">
+              <option>0</option>
+              <option>5</option>
+              <option>10</option>
+              <option>15</option>
+              <option>20</option>
+              <option>25</option>
+            </datalist>
+            <div id="range-ticks-val-25" class="unit">
+              <label for="low-threshold">0</label>
+              <label for="low-threshold">5</label>
+              <label for="low-threshold">10</label>
+              <label for="low-threshold">15</label>
+              <label for="low-threshold">20</label>
+              <label for="low-threshold">25</label>
+              <label for="low-threshold">%</label>
+            </div>
+            <datalist id="range-ticks-50">
+              <option>0</option>
+              <option>10</option>
+              <option>20</option>
+              <option>30</option>
+              <option>40</option>
+              <option>50</option>
+            </datalist>
+            <div id="range-ticks-val-50" class="unit">
+              <label for="low-threshold">0</label>
+              <label for="low-threshold">10</label>
+              <label for="low-threshold">20</label>
+              <label for="low-threshold">30</label>
+              <label for="low-threshold">40</label>
+              <label for="low-threshold">50</label>
+              <label for="low-threshold">%</label>
+            </div>
+            <datalist id="range-ticks-100">
+              <option>0</option>
+              <option>20</option>
+              <option>40</option>
+              <option>60</option>
+              <option>80</option>
+              <option>100</option>
+            </datalist>
+            <div id="range-ticks-val-100" class="unit">
+              <label for="low-threshold">0</label>
+              <label for="low-threshold">20</label>
+              <label for="low-threshold">40</label>
+              <label for="low-threshold">60</label>
+              <label for="low-threshold">80</label>
+              <label for="low-threshold">100</label>
+              <label for="low-threshold">%</label>
+            </div>
+            <div id="range-limit">
+              <label for="range-limit-0">Range:</label>
+              <input type="radio" name="range-limit" id="range-limit-0"
+                  value="" disabled="disabled" style="display: none;">
+              <input type="radio" name="range-limit"
+                  id="range-limit-25" value="range-limit-25"
+                  onchange="setThresholdRange(event)">
+              <label for="range-limit-25">0 - 25</label>
+              <input type="radio" name="range-limit"
+                  id="range-limit-50" value="range-limit-50"
+                  onchange="setThresholdRange(event)">
+              <label for="range-limit-50">0 - 50</label>
+              <input type="radio" name="range-limit"
+                  id="range-limit-100" value="range-limit-100"
+                  onchange="setThresholdRange(event)" checked="checked">
+              <label for="range-limit-100">0 - 100</label>
+            </div>
           </div>
+        </div>
 
-          <!-- Display info area -->
-          <p class="error"></p>  
-          <textarea id="text-info" name="text-info" rows="3"
-              readonly="readonly" disabled="disabled">
-          </textarea>
-        </td>
+        <!-- Display info area -->
+        <div class="info"><p class="info"></p></div>
+      </div>
 
-        <!-- Left step selector -->
-        <td class="top">
+      <div class="right">
+        <div class="top">
+          <!-- Left step selector -->
           <div class="control">
-            <table class="control-top">
-              <tr>
-                <td>
-                  <select id="left-panel" name="left-panel"
-                      onchange="setLeftPanelMode(event)">
-                  </select>
-                </td>
-                <td>
-                  <input type="checkbox" id="left-overlay"
-                      name="left-overlay" onclick="setLeftOverlay(event)">
-                </td>
-                <td>
-                  <label for="left-overlay">Overlay</label>
-                </td>
-              </tr>
-            </table>
+            <div>
+              <label for="step-left">Step:</label>
+              <select id="step-left" name="step-left" 
+                onchange="setLeftStepMode(event)">
+              </select>
+              <input type="checkbox" id="overlay-left"
+                name="overlay-left" onclick="setLeftOverlay(event)">
+              <label for="overlay-left">Overlay</label>
+            </div>
           </div>
-        </td>
 
-        <!-- Right step selector -->
-        <td class="top">
+          <!-- Right step selector -->
           <div class="control">
-            <table class="control-top">
-              <tr>
-                <td>
-                  <select id="right-panel" name="right-panel"
-                      onchange="setRightPanelMode(event)">
-                  </select>
-                </td>
-                <td>
-                  <input type="checkbox" id="right-overlay"
-                      name="right-overlay" onclick="setRightOverlay(event)">
-                </td>
-                <td>
-                  <label for="right-overlay">Overlay</label>
-                </td>
-              </tr>
-            </table>
+            <div>
+              <label for="step-right">Step:</label>
+              <select id="step-right" name="step-right"
+                onchange="setRightStepMode(event)">
+              </select>
+              <input type="checkbox" id="overlay-right"
+                name="overlay-right" onclick="setRightOverlay(event)">
+              <label for="overlay-right">Overlay</label>
+            </div>
           </div>
-        </td>
-      </tr>
+        </div>
 
-      <!-- Canvas -->
-      <tr>
-        <td colspan="2" class="canvas">
-          <canvas id="gl-canvas" width="1034" height="512"></canvas>
-        </td>
-      </tr>
-    </table>
+        <div class="canvas">
+          <!-- Canvas -->
+          <canvas id="gl-canvas"></canvas>
+        </div>
+      </div>
+    </div>
 
     <script src="../common-files/script/error-handling.js"></script>
   </body>
