@@ -29,12 +29,12 @@ const IMAGES = [["blurry-moon512", "png", "Blurry Moon", "bw"],
                 ["steam-engine", "png", "Steam engine", "bw"],
                 ["turbine-blade", "png", "Turbine blade", "bw"]];
 
-const MODES = {INPUT: [0, "Input image"], 
-               SMOOTHING: [1, "Step 1: Gaussian smoothing"],
-               GRADIENT: [2, "Step 2: Gradient magnitude"],
-               NON_MAXIMA: [3, "Step 3: Non-maxima suppression"],
-               THRESHOLDING: [4, "Step 4: Hysteresis thresholding"],
-               EDGE_LINKING: [5, "Step 5: Edge linking"]};
+const MODES = {INPUT: [0, "0: Input image"],
+               SMOOTHING: [1, "1: Gaussian smoothing"],
+               GRADIENT: [2, "2: Gradient magnitude"],
+               NON_MAXIMA: [3, "3: Non-maxima suppression"],
+               THRESHOLDING: [4, "4: Hysteresis thresholding"],
+               EDGE_LINKING: [5, "5: Edge linking"]};
 
 const PARAM = [[4, [7, 21]], [3, [8, 20]], [2, [9, 14]], [2, [5, 15]],
                [4, [4, 10]], [2, [7, 21]], [4, [10, 25]], [2, [5, 15]],
@@ -52,38 +52,35 @@ let smoothingFramebuffer_, gradientFramebuffer_, nonMaxFramebuffer_,
     thresholdingFramebuffer_, edgeLinkingFramebuffer_;
 let framebuffer1_, framebuffer2_, framebuffer3_, framebuffer4_, framebuffer5_,
     framebuffer6_, framebuffer7_;
-let currentImage_, currentLeftMode_, currentRightMode_, isLeftOverlay_,
+let currentImage_, leftStepMode_, rightStepMode_, isLeftOverlay_,
     isRightOverlay_;
 let timeout_, interval_, isError_;
-let sliderDelay_, numMaxIter_, numIterTest_, maxGradient_;
+let resizeDelay_, rangeDelay_, numMaxIter_, numIterTest_, maxGradient_;
 
 
 
 function init() {
   currentImage_ = 0;
-
-  currentLeftMode_ = Object.keys(MODES) [MODES.INPUT[0]];
-  currentRightMode_ = Object.keys(MODES) [MODES.EDGE_LINKING[0]];
+  leftStepMode_ = Object.keys(MODES) [MODES.INPUT[0]];
+  rightStepMode_ = Object.keys(MODES) [MODES.EDGE_LINKING[0]];
   isLeftOverlay_ = false; isRightOverlay_ = false; isError_ = false;
-  sliderDelay_ = 200; numMaxIter_ = 1000; numIterTest_ = 100;
+  resizeDelay_ = 300; rangeDelay_ = 200; numMaxIter_ = 1000; numIterTest_ = 100;
 
   html_ = new Html(IMAGES, MODES);
   let sigma = PARAM[currentImage_][0];
   let lowThreshold = PARAM[currentImage_][1][0];
   let highThreshold = PARAM[currentImage_][1][1];
   html_.init(currentImage_, sigma, [lowThreshold, highThreshold],
-      [currentLeftMode_, currentRightMode_], [isLeftOverlay_, isRightOverlay_]);
+      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
 
-  let page = document.getElementsByClassName("no-javascript")[0];
-  page.className = "";
+  let page = document.getElementsByClassName("main")[0];
+  page.style.display = "block";
 
   handleException(null, null);
   html_.enableControls(false, false, false, true, false);
-  html_.setInfo("Initializing ...");
+  html_.setInfo("Application initialization ...");
 
   canvas_ = document.getElementById("gl-canvas");
-  canvas_.width = 2 * IMAGE_WIDTH + IMAGE_GAP;
-  canvas_.height = IMAGE_HEIGHT;  
 
   let attributes = {alpha: false, antialias: false, depth: false};  
   gl_ = canvas_.getContext("webgl2", attributes);
@@ -133,6 +130,7 @@ function init() {
 
       createFramebuffers();
       if (!isError_) updateTexture();
+
     })
     .catch(function(error) {
       handleException("init", error);
@@ -193,6 +191,20 @@ function clean() {
 
 
 
+function resize() {
+  if (typeof timeout_ !== "undefined") {
+    clearTimeout(timeout_);  
+    if (canvas_.clientWidth != canvas_.width)
+      gl_.clear(gl_.COLOR_BUFFER_BIT);
+  }
+
+  timeout_ = setTimeout(function() {
+    if (!isError_) updateTexture();
+  }, resizeDelay_);
+}
+
+
+
 function selectImage(event) {
   let name = event.target.value;
   for (let i = 0; i < IMAGES.length; i++)
@@ -205,7 +217,7 @@ function selectImage(event) {
   let lowThreshold = PARAM[currentImage_][1][0];
   let highThreshold = PARAM[currentImage_][1][1];
   html_.init(currentImage_, sigma, [lowThreshold, highThreshold],
-      [currentLeftMode_, currentRightMode_], [isLeftOverlay_, isRightOverlay_]);
+      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
 
   deleteFramebuffers();
   createFramebuffers();
@@ -235,7 +247,7 @@ function setSmoothingValue(event) {
     shaderManager_.setKernel(kernel);
 
     if (!isError_) render(true);
-  }, sliderDelay_);
+  }, rangeDelay_);
 }
 
 
@@ -251,7 +263,7 @@ function setLowThreshold(event) {
     shaderManager_.setThresholds([lowThreshold, html_.getHighThreshold()]);
 
     if (!isError_) render(true);
-  }, sliderDelay_);
+  }, rangeDelay_);
 }
 
 
@@ -267,7 +279,7 @@ function setHighThreshold(event) {
     shaderManager_.setThresholds([html_.getLowThreshold(), highThreshold]);
 
     if (!isError_) render(true);
-  }, sliderDelay_);
+  }, rangeDelay_);
 }
 
 
@@ -283,20 +295,22 @@ function setThresholdRange(event) {
 
 
 
-function setLeftPanelMode(event) {
+function setLeftStepMode(event) {
   let value = event.target.value;
-  currentLeftMode_ = Object.keys(MODES) [value];
-  html_.setPanelModes([currentLeftMode_, currentRightMode_]);
+  leftStepMode_ = Object.keys(MODES) [value];
+  html_.setStepModes
+      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
 
   if (!isError_) render(false);
 }
 
 
 
-function setRightPanelMode(event) {
+function setRightStepMode(event) {
   let value = event.target.value;
-  currentRightMode_ = Object.keys(MODES) [value];
-  html_.setPanelModes([currentLeftMode_, currentRightMode_]);
+  rightStepMode_ = Object.keys(MODES) [value];
+  html_.setStepModes
+      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
 
   if (!isError_) render(false);
 }
@@ -305,7 +319,8 @@ function setRightPanelMode(event) {
 
 function setLeftOverlay(event) {
   isLeftOverlay_ = event.target.checked;
-  html_.setPanelModes([currentLeftMode_, currentRightMode_]);
+  html_.setStepModes
+      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
   shaderManager_.setLeftOverlay(isLeftOverlay_);
 
   if (!isError_) render(false);
@@ -315,7 +330,8 @@ function setLeftOverlay(event) {
 
 function setRightOverlay(event) {
   isRightOverlay_ = event.target.checked;
-  html_.setPanelModes([currentLeftMode_, currentRightMode_]);
+  html_.setStepModes
+      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
   shaderManager_.setRightOverlay(isRightOverlay_);
 
   if (!isError_) render(false);
@@ -332,7 +348,7 @@ function renderScene() {
   let isRightColor = IMAGES[currentImage_][3] == "color";
 
   // Select which image to display in the left panel.
-  switch (currentLeftMode_) {
+  switch (leftStepMode_) {
     case Object.keys(MODES) [MODES.SMOOTHING[0]]:
       leftTexture = smoothingFramebuffer_;
       break;
@@ -356,7 +372,7 @@ function renderScene() {
   }
 
   // Select which image to display in the right panel.
-  switch (currentRightMode_) {
+  switch (rightStepMode_) {
     case Object.keys(MODES) [MODES.SMOOTHING[0]]:
       rightTexture = smoothingFramebuffer_;
       break;
@@ -382,11 +398,17 @@ function renderScene() {
   shaderManager_.setLeftColorMode(isLeftColor);
   shaderManager_.setRightColorMode(isRightColor);
 
-  // Render to the screen.
-  gl_.viewport(0, 0, canvas_.width, canvas_.height);
-  gl_.clear(gl_.COLOR_BUFFER_BIT);
-  shaderManager_.render(shaderManager_.MAIN, quad_,
-      [leftTexture, 0], [rightTexture, 0], [edgeTexture, 0]);
+  // Render to the screen
+  if (canvas_.clientWidth == IMAGE_WIDTH ||
+      canvas_.clientWidth == 2 * IMAGE_WIDTH + IMAGE_GAP) {
+    canvas_.width = canvas_.clientWidth;
+    canvas_.height = IMAGE_HEIGHT;
+
+    gl_.viewport(0, 0, canvas_.width, canvas_.height);
+    gl_.clear(gl_.COLOR_BUFFER_BIT);
+    shaderManager_.render(shaderManager_.MAIN, quad_,
+        [leftTexture, 0], [rightTexture, 0], [edgeTexture, 0]);
+  }
 }
 
 
@@ -761,9 +783,12 @@ function handleException(errorCode, description) {
     html_.clearInfo();
     html_.enableControls(false, false, false, false, false);
 
+    document.body.removeAttribute("onresize");
+    document.body.setAttribute("onresize", null);
+
     if (typeof canvas_ !== "undefined")
       canvas_.style.display = "none";
-    
+
     let message = util.getErrorMessage(errorCode);
     util.displayErrorMessage(message, description);
   }
