@@ -1,10 +1,11 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/*
-Canny Edge Detector. Step 5b - Clean up.
-If current pixel was not marked as 'strong' at step 5a (edge linking),
-it is assumed to come from noise, and discarded.
-*/
+/**
+ * Canny Edge Detector. Step 5b - Clean up.
+ * This shader discards all "weak" pixels left after the edge linking step (5a).
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 24, 2024
+ **/
 
 const cleanUpShaders = {
   fragmentShader: `#version 300 es
