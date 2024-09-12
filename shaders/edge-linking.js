@@ -1,15 +1,17 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/* 
-Canny Edge Detector. Step 5a - Edge linking.
-This step is needed in order to fill the gaps in the edges determined at the
-previous step. If current pixel is marked as 'strong', it will remain unchanged.
-If current pixel is marked as 'weak', it will be set to 'strong', only if it is
-connected with a 'strong' neighbor. This shader is called multiple times, using
-ping-pong technique, until there is no 'weak' pixel connected with a 'strong'
-neighbor. Remaining 'weak' pixels are assumed to come from noise, and discarded
-in the next step 5b (clean up).
-*/
+/**
+ * Canny Edge Detector. Step 5a - Edge linking.
+ * "Strong" pixels determined at step 4 (Hysteresis thresholding) are valid
+ * edge points, but these edges contain gaps. This step is needed to fill the
+ * gaps in the edges determined above. If current pixel is "weak", it will be
+ * marked as valid, only if it is connected with a "strong" neighbor.
+ * This shader is called multiple times, using a technique called "ping-pong
+ * shading", until only isolated "weak" pixels are left. They are assumed to
+ * come from noise, and discarded in the next step 5b (Clean up).
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
+ **/
  
 const edgeLinkingShaders = {
   fragmentShader: `#version 300 es
@@ -38,7 +40,7 @@ const edgeLinkingShaders = {
     #endif
 
 
-    // Check if there is any 'strong' neighbor, using 8-connectivity.
+    // Check if there is any "strong" neighbor, using 8-connectivity.
     lowp float getMaxConnectedPixel() {
       lowp float max = 0.0;
 
@@ -118,11 +120,11 @@ const edgeLinkingShaders = {
       lowp float gradient = texture2D(texSampler, fTexCoord).r;
       #endif
 
-      // If current pixel is marked as 'strong', it will not be changed.
+      // If current pixel is "strong", it will not be changed.
       if (gradient > 1.0 - EPSILON) outputColor = 1.0;
 
-      // If current pixel is marked as 'weak', it will be set to 'strong' only
-      // if it is connected with a 'strong' neighbor, using 8-connectivity.
+      // If current pixel is "weak", it will be marked as valid, only if it
+      // is connected with a "strong" neighbor, using 8-connectivity.
       else if (gradient > LOW_THRES_INTENSITY - EPSILON &&
                gradient < LOW_THRES_INTENSITY + EPSILON) {
         lowp float max = getMaxConnectedPixel();
