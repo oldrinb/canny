@@ -1,5 +1,10 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
-/* Utility functions needed in different GLSL shaders. */
+
+/**
+ * Utility functions needed in different GLSL shaders.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 19, 2024
+ **/
 
  const shaderUtil = {
   vertexShader: `#version 300 es
