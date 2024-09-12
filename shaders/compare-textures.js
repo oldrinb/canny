@@ -1,4 +1,9 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
+
+/**
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 2, 2024
+ **/
  
 const compareTexShaders = {
   vertexShader: `#version 300 es
