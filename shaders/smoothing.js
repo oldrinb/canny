@@ -1,11 +1,13 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/*
-Canny Edge Detector. Step 1 - Image smoothing with a Gaussian filter.
-This shader convolves current pixel with an 1-D Gaussian kernel. It is executed
-twice: first in the horizontal direction, then in the vertical direction, using
-the separability property of the Gaussian.
-*/
+/**
+ * Canny Edge Detector. Step 1 - Image smoothing with a Gaussian filter.
+ * This shader convolves the current pixel with an 1-D Gaussian kernel. It is
+ * called twice: first, in the horizontal direction, then in the vertical
+ * direction, using the separability property of the Gaussian.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
+ **/
 
  const smoothingShaders = {
   fragmentShader: `#version 300 es
