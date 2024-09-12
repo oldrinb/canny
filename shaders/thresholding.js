@@ -1,11 +1,16 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/* 
-Canny Edge Detector. Step 4 - Hysteresis thresholding.
-It uses two thresholds to determine potential edges. If current pixel is above
-the high threshold, it is marked as "strong". If it is between the two
-thresholds, it is marked as "weak". Everything else is discarded.
-*/
+/**
+ * Canny Edge Detector. Step 4 - Hysteresis thresholding.
+ * It uses two thresholds to determine potential edges. If current pixel is
+ * above the high threshold, it is marked as "strong". If it is between the two
+ * thresholds, it is marked as "weak". Everything else is discarded.
+ * "Strong" pixels are valid edge points. In the next step (5a - Edge linking),
+ * it will be determined which of the "weak" pixels are part of the edge, and
+ * which are noise.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
+ **/
  
 const thresholdingShaders = {
   fragmentShader: `#version 300 es
