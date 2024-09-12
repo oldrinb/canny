@@ -1,10 +1,12 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/*
-Canny Edge Detector. Step 2 - Gradient magnitude and direction.
-This is achieved by computing first the x and y components,
-then the magnitude and direction of the gradient.
-*/
+/**
+ * Canny Edge Detector. Step 2 - Gradient magnitude and direction.
+ * This is achieved by computing first the x and y components, then the
+ * magnitude and direction of the gradient.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
+ **/
 
 const gradientShaders = {
   fragmentShader: `#version 300 es
@@ -125,7 +127,7 @@ const gradientShaders = {
       }
 
       else {
-        // Computing the gradient in the x and y directions
+        // Computing the gradient in the x and y directions,
         // using a Prewitt operator.
         highp float gx = computeBWGradient(true);
         highp float gy = computeBWGradient(false);
