@@ -1,5 +1,10 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
-/* Display final images to the screen. */
+
+/**
+ * Render final images to the screen.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 19, 2024
+ **/
 
 const mainShaders = {
   vertexShader: `#version 300 es
