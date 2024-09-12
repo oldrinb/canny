@@ -1,6 +1,10 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/* Interface between the JavaScript 'main.js' file and GLSL shaders. */
+/**
+ * Interface between the JavaScript 'main.js' file and GLSL shaders.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
+ **/
 
 function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
     [edgeColor, lowThresIntensity], [floatMinValue, floatMaxValue]) {
