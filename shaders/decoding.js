@@ -1,8 +1,10 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
 /*
-This fragment shader is converting an intermediate result of the algorithm,
-stored in a 16 bit format, into a 8 bit image, in order to be displayed.
+ * This fragment shader converts a pixel stored in a 16-bit format into 8-bit,
+ * in order to be displayed.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 20, 2024
 */
 
  const decodingShaders = {
