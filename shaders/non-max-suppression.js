@@ -1,14 +1,17 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/*
-Canny Edge Detector. Step 3 - Non-maxima suppression.
-This step is intended to thin the ridges detected by the gradient in the step 2.
-This is achieved by defining four discrete orientations of the edge normal,
-and find which of these orientations is closest to the direction of the gradient
-in this point. Next, we compare the magnitude of the gradient, with the
-two neighbors along the orientation detected above. If the value is less than
-at least one of the neighbors, we discard the pixel, otherwise we keep it.
-*/
+/**
+ * Canny Edge Detector. Step 3 - Non-maxima suppression.
+ * This step is intended to thin the ridges detected by the gradient in the step
+ * 2. This is achieved by defining four discrete orientations of the edge
+ * normal, and find which of these orientations is closest to the direction of
+ * the gradient in this point. Next, the magnitude of the gradient is compared
+ * with the two neighbors along the orientation detected above. If the value is
+ * less than at least one of the neighbors, the pixel is discarded, otherwise it
+ * is marked as valid.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 19, 2024
+ **/
 
 const nonMaxSuppressionShaders = {
   fragmentShader: `#version 300 es
