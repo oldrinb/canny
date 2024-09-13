@@ -1,6 +1,10 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
 
-/* Interface between the JavaScript 'main.js' file and the 'index.html' file. */
+/**
+ * Interface between JavaScript 'main.js' file and 'index.html' file.
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 30, 2024
+ **/
 
 function Html(images, modes) {
   const FULL_RANGE = 100, HALF_RANGE = 50, QUARTER_RANGE = 25;
