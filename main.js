@@ -1,18 +1,21 @@
 /*<?xml version="1.0" encoding="utf-8"?>*/
-/*
-This application implements The Canny edge detection algorithm, implemented
-using GLSL shaders. It consists of the following basic steps:
-1. Image smoothing with a Gaussian filter.
-2. Gradient magnitude and direction.
-3. Non-maxima suppression.
-4. Hysteresis thresholding.
-5. Edge linking.
 
-References:
+/**
+ * This application implements The Canny edge detection algorithm, using GLSL
+ * shaders. It consists of the following basic steps:
+ * 1. Image smoothing with a Gaussian filter.
+ * 2. Gradient magnitude and direction.
+ * 3. Non-maxima suppression.
+ * 4. Hysteresis thresholding.
+ * 5. Edge linking.
 
-Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing, 3rd edition",
-p. 741-747, 2008
-*/
+ * References:
+ * Richard E. Woods, Rafael C. Gonzales, "Digital Image Processing, 3rd edition",
+ * p. 741-747, 2008
+
+ * Author: Oldrin Bărbulescu
+ * Last modified: Aug 30, 2024
+ **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
 const IMAGE_PATH = "../common-files/images/";
@@ -488,6 +491,7 @@ function computeSmoothing() {
 
 
 // Step 2. Computing the gradient magnitude and direction.
+// More details in the file 'shaders/gradient.js'
 function computeGradient() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
   shaderManager_.setInputColorMode(IMAGES[currentImage_][3] == "color");
@@ -526,6 +530,7 @@ function computeGradient() {
 
 
 // Step 3. Non-maxima suppression
+// More details in the file 'shaders/non-max-suppression.js'
 function computeNonMaxima() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -549,6 +554,7 @@ function computeNonMaxima() {
 
 
 // Step 4. Hysteresis thresholding
+// More details in the file 'shaders/thresholding.js'
 function computeThresholding() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -565,6 +571,7 @@ function computeThresholding() {
 
 
 // Step 5. Edge linking.
+// More details in the files 'shaders/edge-linking.js' and 'shaders/clean-up.js'
 function computeEdgeLinking() {
   gl_.viewport(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -573,8 +580,7 @@ function computeEdgeLinking() {
       try {
         let i = 0; let texturesEqual = false;
 
-        // Edge linking.
-        // View explanation in the shader 'edge-linking.js'
+        // 5a) Edge linking.
         do {
           framebuffer6_.startDrawing();
           gl_.clear(gl_.COLOR_BUFFER_BIT);
@@ -594,7 +600,7 @@ function computeEdgeLinking() {
           i++;
         } while (i < numMaxIter_ && !texturesEqual);
 
-        // Clean-up
+        // 5b) Clean-up
         edgeLinkingFramebuffer_.startDrawing();
         gl_.clear(gl_.COLOR_BUFFER_BIT);
         shaderManager_.render(shaderManager_.CLEAN_UP, quad_,
@@ -612,10 +618,10 @@ function computeEdgeLinking() {
 
 
 // Computing the 1-D Gaussian kernel needed to smooth the image (step 1).
-// As shown in [1], the full smoothing capability of the Gaussian filter is
-// provided by a filter of size 'n', where 'n' is the smallest odd integer
-// greater than or equal to 6 * sigma. The kernel being symetrical, we only
-// need to store half of it, and the middle value.
+// The full smoothing capability of the Gaussian filter is provided by a filter
+// of size 'n', where 'n' is the smallest odd integer greater than or equal to
+// 6 * sigma. The kernel being symetrical, it is only needed to store half of
+// it, and the middle value.
 function computeGaussianKernel(sigma) {
   let kernel = [];
 
