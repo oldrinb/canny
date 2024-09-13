@@ -14,6 +14,7 @@ of an edge, or they come from noise;
 
 It is suggested that the ratio of the high to low threshold should be two
 or three to one.
+
 5. Edge linking, in order to fill the gaps in the edges determined above.
 "Strong" pixels are assumed to be valid edge points. "Weak" pixels are
 considered valid only if they are connected with a "strong" pixel. All the
