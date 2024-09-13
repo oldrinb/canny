@@ -11,6 +11,7 @@ to come from true edges in the image, but they contain gaps;
 - pixels between the two thresholds are considered "weak", they are either part
 of an edge, or they come from noise;
 - pixels below the low threshold are discarded.
+
 It is suggested that the ratio of the high to low threshold should be two
 or three to one.
 5. Edge linking, in order to fill the gaps in the edges determined above.
