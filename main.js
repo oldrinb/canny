@@ -14,7 +14,7 @@
  * p. 741-747, 2008
 
  * Author: Oldrin Bărbulescu
- * Last modified: Aug 30, 2024
+ * Last modified: Sep 13, 2024
  **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
@@ -430,12 +430,13 @@ function updateTexture() {
 
       render(true);
     }
-    else if (typeof interval_ === "undefined") {
+    else {
       canvas_.style.display = "none";
       html_.enableControls(true, false, false, true, false);
       html_.setInfo("Loading image ...");
 
-      interval_ = setInterval(updateTexture , 100);
+      if (typeof interval_ === "undefined")
+        interval_ = setInterval(updateTexture , 100);
     }
   }
   catch(error) {
