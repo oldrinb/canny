@@ -2,9 +2,9 @@
 
 /**
  * Author: Oldrin Bărbulescu
- * Last modified: Aug 2, 2024
+ * Last modified: Sep 24, 2024
  **/
- 
+
 const compareTexShaders = {
   vertexShader: `#version 300 es
     #define WEBGL2
@@ -32,14 +32,14 @@ const compareTexShaders = {
 
     const float EPSILON;
 
-    uniform sampler2D texSampler1, texSampler2;
-
     #ifdef WEBGL2
+    uniform sampler2D texSampler1, texSampler2;
+    
     out lowp float outputColor;
     #endif
 
 
-        
+
     void main() {
       #ifdef WEBGL2
       lowp float image1 = texelFetch(texSampler1, ivec2(gl_FragCoord.xy), 0).r;
@@ -48,8 +48,6 @@ const compareTexShaders = {
       lowp float difference = abs(image1 - image2);
       if (difference > EPSILON) outputColor = 1.0;
       else discard;
-      #else
-      texSampler1; texSampler2;
       #endif
-    }		`
+    }`
 };
