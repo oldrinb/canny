@@ -14,7 +14,7 @@
  * p. 741-747, 2008
 
  * Author: Oldrin Bărbulescu
- * Last modified: Sep 13, 2024
+ * Last modified: Sep 26, 2024
  **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
@@ -56,7 +56,7 @@ let smoothingFramebuffer_, gradientFramebuffer_, nonMaxFramebuffer_,
 let framebuffer1_, framebuffer2_, framebuffer3_, framebuffer4_, framebuffer5_,
     framebuffer6_, framebuffer7_;
 let currentImage_, leftStepMode_, rightStepMode_, isLeftOverlay_,
-    isRightOverlay_;
+    isRightOverlay_, isRightPanelVisible_;
 let timeout_, interval_, isError_;
 let resizeDelay_, rangeDelay_, numMaxIter_, numIterTest_, maxGradient_;
 
@@ -69,15 +69,18 @@ function init() {
   isLeftOverlay_ = false; isRightOverlay_ = false; isError_ = false;
   resizeDelay_ = 300; rangeDelay_ = 200; numMaxIter_ = 1000; numIterTest_ = 100;
 
+  let page = document.getElementsByClassName("main")[0];
+  page.style.display = "block";
+  let element = document.getElementById("step-right");
+  isRightPanelVisible_ = (element.offsetParent != null);
+
   html_ = new Html(IMAGES, MODES);
   let sigma = PARAM[currentImage_][0];
   let lowThreshold = PARAM[currentImage_][1][0];
   let highThreshold = PARAM[currentImage_][1][1];
-  html_.init(currentImage_, sigma, [lowThreshold, highThreshold],
-      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
-
-  let page = document.getElementsByClassName("main")[0];
-  page.style.display = "block";
+  html_.init(currentImage_, sigma, [lowThreshold, highThreshold], 
+      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_],
+      isRightPanelVisible_);
 
   handleException(null, null);
   html_.enableControls(false, false, false, true, false);
@@ -197,8 +200,14 @@ function clean() {
 function resize() {
   if (typeof timeout_ !== "undefined") {
     clearTimeout(timeout_);  
-    if (canvas_.clientWidth != canvas_.width)
+    if (canvas_.clientWidth != canvas_.width) {
       gl_.clear(gl_.COLOR_BUFFER_BIT);
+    }
+
+    let element = document.getElementById("step-right");
+    isRightPanelVisible_ = (element.offsetParent != null);
+    html_.setStepModes([leftStepMode_, rightStepMode_],
+        [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
   }
 
   timeout_ = setTimeout(function() {
@@ -220,7 +229,8 @@ function selectImage(event) {
   let lowThreshold = PARAM[currentImage_][1][0];
   let highThreshold = PARAM[currentImage_][1][1];
   html_.init(currentImage_, sigma, [lowThreshold, highThreshold],
-      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
+      [leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_],
+      isRightPanelVisible_);
 
   deleteFramebuffers();
   createFramebuffers();
@@ -301,8 +311,8 @@ function setThresholdRange(event) {
 function setLeftStepMode(event) {
   let value = event.target.value;
   leftStepMode_ = Object.keys(MODES) [value];
-  html_.setStepModes
-      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
+  html_.setStepModes([leftStepMode_, rightStepMode_],
+      [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
 
   if (!isError_) render(false);
 }
@@ -312,8 +322,8 @@ function setLeftStepMode(event) {
 function setRightStepMode(event) {
   let value = event.target.value;
   rightStepMode_ = Object.keys(MODES) [value];
-  html_.setStepModes
-      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
+  html_.setStepModes([leftStepMode_, rightStepMode_],
+      [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
 
   if (!isError_) render(false);
 }
@@ -322,8 +332,8 @@ function setRightStepMode(event) {
 
 function setLeftOverlay(event) {
   isLeftOverlay_ = event.target.checked;
-  html_.setStepModes
-      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
+  html_.setStepModes([leftStepMode_, rightStepMode_],
+      [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
   shaderManager_.setLeftOverlay(isLeftOverlay_);
 
   if (!isError_) render(false);
@@ -333,8 +343,8 @@ function setLeftOverlay(event) {
 
 function setRightOverlay(event) {
   isRightOverlay_ = event.target.checked;
-  html_.setStepModes
-      ([leftStepMode_, rightStepMode_], [isLeftOverlay_, isRightOverlay_]);
+  html_.setStepModes([leftStepMode_, rightStepMode_],
+      [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
   shaderManager_.setRightOverlay(isRightOverlay_);
 
   if (!isError_) render(false);
@@ -797,7 +807,7 @@ function handleException(errorCode, description) {
       canvas_.style.display = "none";
 
     let message = util.getErrorMessage(errorCode);
-    util.displayErrorMessage(message, description);
+    util.displayError(message, description);
   }
-  else util.displayErrorMessage(null, null);
+  else util.displayError(null, null);
 }
