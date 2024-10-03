@@ -17,7 +17,7 @@ or three to one.
 
 5. Edge linking, in order to fill the gaps in the edges determined above.
 "Strong" pixels are assumed to be valid edge points. "Weak" pixels are
-considered valid only if they are connected with a "strong" pixel. All the
+considered valid, only if they are connected with a "strong" pixel. All the
 other ones are considered noise, and discarded.
 
 www.oldrinb.dev/projects/canny
