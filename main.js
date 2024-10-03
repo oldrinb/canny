@@ -14,7 +14,7 @@
  * p. 741-747, 2008
 
  * Author: Oldrin Bărbulescu
- * Last modified: Sep 26, 2024
+ * Last modified: Oct 3, 2024
  **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
@@ -66,7 +66,7 @@ function init() {
   currentImage_ = 0;
   leftStepMode_ = Object.keys(MODES) [MODES.INPUT[0]];
   rightStepMode_ = Object.keys(MODES) [MODES.EDGE_LINKING[0]];
-  isLeftOverlay_ = false; isRightOverlay_ = false; isError_ = false;
+  isLeftOverlay_ = true; isRightOverlay_ = false; isError_ = false;
   resizeDelay_ = 300; rangeDelay_ = 200; numMaxIter_ = 1000; numIterTest_ = 100;
 
   let page = document.getElementsByClassName("main")[0];
@@ -126,6 +126,8 @@ function init() {
       shaderManager_.setKernel(kernel);
       shaderManager_.setThresholds([html_.getLowThreshold(),
                                     html_.getHighThreshold()]);
+      shaderManager_.setLeftOverlay(isLeftOverlay_);
+      shaderManager_.setRightOverlay(isRightOverlay_);
 
       gl_.enable(gl_.CULL_FACE);
       gl_.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -198,17 +200,16 @@ function clean() {
 
 
 function resize() {
-  if (typeof timeout_ !== "undefined") {
-    clearTimeout(timeout_);  
-    if (canvas_.clientWidth != canvas_.width) {
-      gl_.clear(gl_.COLOR_BUFFER_BIT);
-    }
+  let element = document.getElementById("step-right");
+  isRightPanelVisible_ = (element.offsetParent != null);
+  html_.setStepModes([leftStepMode_, rightStepMode_],
+      [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
 
-    let element = document.getElementById("step-right");
-    isRightPanelVisible_ = (element.offsetParent != null);
-    html_.setStepModes([leftStepMode_, rightStepMode_],
-        [isLeftOverlay_, isRightOverlay_], isRightPanelVisible_);
-  }
+  if (canvas_.clientWidth != canvas_.width)
+    gl_.clear(gl_.COLOR_BUFFER_BIT);
+
+  if (typeof timeout_ !== "undefined")
+    clearTimeout(timeout_);
 
   timeout_ = setTimeout(function() {
     if (!isError_) updateTexture();
@@ -240,6 +241,8 @@ function selectImage(event) {
     shaderManager_.setKernel(kernel, false);
     shaderManager_.setThresholds([html_.getLowThreshold(),
         html_.getHighThreshold()]);
+    shaderManager_.setLeftOverlay(isLeftOverlay_);
+    shaderManager_.setRightOverlay(isRightOverlay_);
 
     updateTexture();
   }
