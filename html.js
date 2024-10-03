@@ -3,7 +3,7 @@
 /**
  * Interface between JavaScript 'main.js' file and 'index.html' file.
  * Author: Oldrin Bărbulescu
- * Last modified: Aug 30, 2024
+ * Last modified: Sep 26, 2024
  **/
 
 function Html(images, modes) {
@@ -77,7 +77,8 @@ function Html(images, modes) {
 
 
   this.init = function(currentImage, sigma, [lowThreshold, highThreshold],
-      [leftStepMode, rightStepMode], [isLeftOverlay, isRightOverlay]) {
+      [leftStepMode, rightStepMode], [isLeftOverlay, isRightOverlay],
+      isRightPanelVisible) {
     for (let i = selectImage_.options.length - 1; i >= 0; i--)
       selectImage_.remove(i);
 
@@ -139,8 +140,8 @@ function Html(images, modes) {
       stepRightSelect_.add(option);
     }
 
-    this.setStepModes
-        ([leftStepMode, rightStepMode], [isLeftOverlay, isRightOverlay]);
+    this.setStepModes([leftStepMode, rightStepMode],
+        [isLeftOverlay, isRightOverlay], isRightPanelVisible);
 
     this.clearInfo();
     
@@ -255,8 +256,8 @@ function Html(images, modes) {
 
 
 
-  this.setStepModes = function
-      ([leftStepMode, rightStepMode], [leftOverlay, rightOverlay]) {
+  this.setStepModes = function([leftStepMode, rightStepMode],
+      [leftOverlay, rightOverlay], isRightPanelVisible) {
     stepMainSelect_.selectedIndex = modes[leftStepMode][0];
     stepLeftSelect_.selectedIndex = modes[leftStepMode][0];
     stepRightSelect_.selectedIndex = modes[rightStepMode][0];
@@ -267,19 +268,26 @@ function Html(images, modes) {
     isThresholdingEnabled_ =
         (leftStepMode == Object.keys(modes) [modes.THRESHOLDING[0]]) ||
         (leftStepMode == Object.keys(modes) [modes.EDGE_LINKING[0]]) ||
-        (rightStepMode == Object.keys(modes) [modes.THRESHOLDING[0]]) ||
-        (rightStepMode == Object.keys(modes) [modes.EDGE_LINKING[0]]) ||
-        overlayMainInput_.checked || overlayLeftInput_.checked ||
-        overlayRightInput_.checked;
+        overlayMainInput_.checked || overlayLeftInput_.checked;
 
     isSmoothingEnabled_ =
         (leftStepMode == Object.keys(modes) [modes.SMOOTHING[0]]) ||
         (leftStepMode == Object.keys(modes) [modes.GRADIENT[0]]) ||
-        (leftStepMode == Object.keys(modes) [modes.NON_MAXIMA[0]]) ||
-        (rightStepMode == Object.keys(modes) [modes.SMOOTHING[0]]) ||
-        (rightStepMode == Object.keys(modes) [modes.GRADIENT[0]]) ||
-        (rightStepMode == Object.keys(modes) [modes.NON_MAXIMA[0]]) ||
-        isThresholdingEnabled_;
+        (leftStepMode == Object.keys(modes) [modes.NON_MAXIMA[0]]);
+
+    if (isRightPanelVisible) {
+      isThresholdingEnabled_ = isThresholdingEnabled_ ||
+          (rightStepMode == Object.keys(modes) [modes.THRESHOLDING[0]]) ||
+          (rightStepMode == Object.keys(modes) [modes.EDGE_LINKING[0]]) ||
+          overlayRightInput_.checked;
+
+      isSmoothingEnabled_ = isSmoothingEnabled_ ||
+          (rightStepMode == Object.keys(modes) [modes.SMOOTHING[0]]) ||
+          (rightStepMode == Object.keys(modes) [modes.GRADIENT[0]]) ||
+          (rightStepMode == Object.keys(modes) [modes.NON_MAXIMA[0]]);
+    }
+
+    isSmoothingEnabled_ = isSmoothingEnabled_ || isThresholdingEnabled_;
 
     util.enableInputControl(html_.smoothing, isSmoothingEnabled_);
     util.enableInputControl(html_.thresholding, isThresholdingEnabled_);
@@ -288,7 +296,7 @@ function Html(images, modes) {
 
 
 
-  this.setInfo = function(info) {    
+  this.setInfo = function(info) {
     for (let i = 0; i < infoTextAreas_.length; i++) {
       let p = infoTextAreas_[i].getElementsByTagName("P")[0];
       p.className = "info";
