@@ -3,7 +3,7 @@
 /**
  * Interface between the JavaScript 'main.js' file and GLSL shaders.
  * Author: Oldrin Bărbulescu
- * Last modified: Aug 20, 2024
+ * Last modified: Sep 24, 2024
  **/
 
 function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
@@ -86,7 +86,7 @@ function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
              programs_[this.NON_MAXIMA].getUniformLocation("texSampler1"),
              programs_[this.THRESHOLDING].getUniformLocation("texSampler1"),
              programs_[this.EDGE_LINKING].getUniformLocation("texSampler"),
-             programs_[this.COMPARE_TEX].getUniformLocation("texSampler1"),
+             null,
              programs_[this.CLEAN_UP].getUniformLocation("texSampler"),
              programs_[this.ENCODING].getUniformLocation("texSampler"),
              programs_[this.DECODING].getUniformLocation("texSampler1")];
@@ -97,9 +97,15 @@ function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
              programs_[this.GRADIENT].getUniformLocation("texSampler2"),
              programs_[this.NON_MAXIMA].getUniformLocation("texSampler2"),
              programs_[this.THRESHOLDING].getUniformLocation("texSampler2"),
-             null,programs_[this.COMPARE_TEX].getUniformLocation("texSampler2"),
-             null, null,
+             null, null, null, null,
              programs_[this.DECODING].getUniformLocation("texSampler2")];
+
+        if (!(gl instanceof WebGLRenderingContext)) {
+            texSampler1Array_[this.COMPARE_TEX] =
+              programs_[this.COMPARE_TEX].getUniformLocation("texSampler1");
+            texSampler2Array_[this.COMPARE_TEX] =
+              programs_[this.COMPARE_TEX].getUniformLocation("texSampler2");
+        }
 
         texSampler3Array_ =
             [programs_[this.MAIN].getUniformLocation("edgeTexSampler"),
@@ -146,7 +152,7 @@ function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
 
   this.setAttribPointers = function(mesh) {
     for (let i = 0; i < N_PROGRAMS; i++) {
-      mesh.setAttribPointers(programs_[i].getWebGLProgram(),
+      mesh.setAttribPointers(programs_[i].program, 
           vertexPositionArray_[i], -1, texCoordArray_[i]);
     }
   };
@@ -181,7 +187,7 @@ function ShaderManager([gl], [imageWidth, imageHeight, imageGap],
       else framebuffer3.startReading(attachment3, textureUnit);
     }
 
-    mesh.render(programs_[programId].getWebGLProgram(),
+    mesh.render(programs_[programId].program,
         vertexPositionArray_[programId], -1, texCoordArray_[programId]);
 
     framebuffer1.stopReading();
