@@ -14,7 +14,7 @@
  * p. 741-747, 2008
 
  * Author: Oldrin Bărbulescu
- * Last modified: Oct 3, 2024
+ * Last modified: Nov 7, 2024
  **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
@@ -130,6 +130,8 @@ function init() {
       shaderManager_.setRightOverlay(isRightOverlay_);
 
       gl_.enable(gl_.CULL_FACE);
+      gl_.cullFace(gl_.BACK);
+      
       gl_.clearColor(0.0, 0.0, 0.0, 1.0);
 
       let errorCode = gl_.getError();
