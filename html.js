@@ -3,7 +3,7 @@
 /**
  * Interface between JavaScript 'main.js' file and 'index.html' file.
  * Author: Oldrin Bărbulescu
- * Last modified: Sep 26, 2024
+ * Last modified: Nov 12, 2024
  **/
 
 function Html(images, modes) {
@@ -309,7 +309,7 @@ function Html(images, modes) {
   this.clearInfo = function() {
     for (let i = 0; i < infoTextAreas_.length; i++) {
       let p = infoTextAreas_[i].getElementsByTagName("P")[0];
-      p.innerHTML = "";
+      p.innerHTML = "&nbsp;";
     }
   };
 
@@ -337,7 +337,7 @@ function Html(images, modes) {
       if (isInfoEnabled) p.className = "info";
       else {
         p.className = "error";
-        p.innerHTML = "";
+        p.innerHTML = "&nbsp;";
       }
     }
   };
