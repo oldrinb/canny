@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <title>Canny Edge Detector</title>
-    <link rel="icon" type="image/x-icon" href="../common-files/icon/gl.ico">
+    <link rel="icon" type="image/x-icon" href="../common-files/icons/ob.ico">
     <link rel="stylesheet" href="style.css">
     <meta charset="utf-8">
     <meta name="author" content="Oldrin Bărbulescu">
@@ -36,8 +36,7 @@
 
   <body onload="init()" onbeforeunload="clean()" onresize="resize()">
     <noscript>
-      <h1>Image processing</h1>
-      <h2>Canny edge detector</h2>
+      <h1>Canny edge detector</h1>
       <p class="error">
         This site requires Javascript to work, please enable Javascript in your
             browser or use a browser with Javascript support.
@@ -47,8 +46,14 @@
     <div class="main">
       <div class="left">
         <div class="left">
-          <h1>Image processing</h1>
-          <h2>Canny edge detector</h2>
+          <h1>Canny edge detector</h1>
+
+          <div class="intro">
+            <p>This application implements a popular and effective edge detector
+                  that is used as a pre-processing step in many computer vision
+                  algorithms.
+            </p>
+          </div>
 
           <!-- Image selection -->
           <div class="control">
@@ -61,7 +66,7 @@
           </div>
 
           <div class="hidden">
-            <h3>Step:</h3>
+            <h2>Step:</h2>
 
             <!-- Step selector -->
             <div class="control">
@@ -83,7 +88,7 @@
         </div>
 
         <div class="left">
-          <h3>Parameters:</h3>
+          <h2>Parameters:</h2>
 
           <!-- Gaussian smoothing -->
           <div class="control">
@@ -254,6 +259,18 @@
           <!-- Canvas -->
           <canvas id="gl-canvas"></canvas>
         </div>
+
+        <div class="ref">
+          <p class="title">References:</p>
+          <p>
+            Richard E. Woods, Rafael C. Gonzales, &ldquo;Digital Image
+                Processing, 3rd edition&rdquo;, p. 741-747, 2008
+          </p>
+        </div>
+        <div class="copy">
+          <hr>
+          <p>&copy; 2024 Oldrin B&#259;rbulescu. All rights reserved.</p>
+       </div>
       </div>
     </div>
 
