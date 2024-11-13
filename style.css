@@ -2,7 +2,7 @@
 
 /**
  * Author: Oldrin Bărbulescu
- * Last modified: Nov 5, 2024
+ * Last modified: Nov 12, 2024
  **/
 
 * {
@@ -65,31 +65,45 @@ div.left > div.left {
   display: block;
 }
 
+div.intro,
 div.info {
   margin: 10px 5px 10px 5px;
   max-width: 247px;
+  min-width: 247px;
+}
+
+div.canvas {
+  margin-left: 5px;
+  max-height: 512px;
+  max-width: 1034px;
+  min-height: 512px;
+  min-width: 1034px;
+}
+
+div.ref,
+div.copy {
+  margin-left: 5px;
+  margin-top: 10px;
+  max-width: 1034px;
+  min-width: 1034px; 
 }
 
 h1,
-h2,
-h3 {
+h2 {
   font-weight: bold;
   margin-bottom: 10px;
   margin-top: 15px;
   text-align: center;
+  text-shadow: 2px 2px 5px #aaa;
 }
 
 h1 {
-  font-size: 1.6em;
+  font-size: 1.3em;
   margin-top: 0;
 }
 
 h2 {
-  font-size: 1.3em;
-}
-
-h3 {
-  margin-left: 6px;
+  margin-left: 11px;
   text-align: left;
 }
 
@@ -97,6 +111,7 @@ div.control {
   background-color: #dae2ff;
   border: 1px solid #aaa;
   border-radius: 3px;
+  box-shadow: 2px 2px 10px #aaa;
   color: inherit;
   margin: 10px 5px 10px 5px;
 }
@@ -108,7 +123,8 @@ div.control div {
 div.top div.control {
   display: inline-block;
   margin-top: 0;
-  width: 510px;
+  max-width: 510px;
+  min-width: 510px;
 }
 
 div.top div.control div {
@@ -201,8 +217,15 @@ div#range-ticks-val-100 {
 }
 
 p {
+  line-height: 140%;
   text-align: justify;
   white-space: normal;
+}
+
+p.title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 5px #aaa;
 }
 
 p.info {
@@ -218,8 +241,18 @@ p.error {
 canvas {
   display: none;
   height: 512px;
-  margin-left: 5px;
+  max-height: 512px;
+  min-height: 512px;
+  max-width: 1034px;
+  min-width: 1034px;
   width: 1034px;
+}
+
+hr {
+  border-top: 1px solid #aaa;
+  box-shadow: 2px 2px 10px #aaa;
+  height: 1px;
+  margin-bottom: 5px;
 }
 
 @media screen and (max-width: 1200px) {
@@ -227,7 +260,12 @@ canvas {
     display: none;
   }
 
+  div.canvas,
+  div.ref,
+  div.copy,
   canvas {
+    max-width: 512px;
+    min-width: 512px;
     width: 512px;
   }
 }
@@ -260,15 +298,18 @@ canvas {
     display: none;
   }
 
-  h3 {
+  h2 {
     margin-top: 0;
   }
 
-  div.hidden h3 {
+  div.hidden h2 {
     margin-top: 15px;
   }
 
-  canvas {
-    margin: auto;
+  div.canvas,
+  div.ref,
+  div.copy {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
