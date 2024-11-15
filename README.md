@@ -1,3 +1,5 @@
+Canny Edge Detector
+
 Image processiong on GPU. This application implements a popular and effective edge detector.
 Detecting edges is one of the most fundamental algorithms in image processing, used as a pre-processing step in many computer vision algorithms.
 
