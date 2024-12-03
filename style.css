@@ -2,7 +2,7 @@
 
 /**
  * Author: Oldrin Bărbulescu
- * Last modified: Nov 12, 2024
+ * Last modified: Nov 19, 2024
  **/
 
 * {
@@ -131,6 +131,7 @@ div.top div.control div {
   text-align: center;
 }
 
+div.step-main,
 div.hidden {
   display: none;
 }
@@ -238,6 +239,32 @@ p.error {
   color: red;
 }
 
+a {
+  background-color: inherit;
+  color: #4a6dff;
+  letter-spacing: 2px;
+}
+
+a,
+a span {
+  white-space: nowrap;
+}
+
+
+a span {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+a,
+a:hover {
+  text-decoration:none;
+}
+
+a:hover span{
+  text-decoration:underline;
+}
+
 canvas {
   display: none;
   height: 512px;
@@ -289,8 +316,8 @@ hr {
     display: none;
   }
 
-  div.hidden,
-  div.hidden div.info {
+  div.step-main,
+  div.step-main div.info {
     display: block;
   }
 
@@ -302,8 +329,13 @@ hr {
     margin-top: 0;
   }
 
-  div.hidden h2 {
+  div.step-main h2 {
     margin-top: 15px;
+  }
+  
+  div.hidden {
+    display: block;
+    height: 1px;
   }
 
   div.canvas,
