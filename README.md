@@ -21,7 +21,7 @@ considered valid, only if they are connected with a "strong" pixel. All the
 other ones are considered noise, and discarded.
 
 Project:
-oldrinb.dev/projects/canny
+oldrinb.dev/canny
 
 References:
 [1] Richard E. Woods, Rafael C. Gonzales. Digital Image Processing, 3rd edition, p. 741-747, 2008
