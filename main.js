@@ -14,19 +14,19 @@
  * p. 741-747, 2008
 
  * Author: Oldrin Bărbulescu
- * Last modified: Nov 7, 2024
+ * Last modified: Dec 2, 2024
  **/
 
 const IMAGE_WIDTH = 512, IMAGE_HEIGHT = 512, IMAGE_GAP = 10;
-const IMAGE_PATH = "../common-files/images/";
-const IMAGES = [["blurry-moon512", "png", "Blurry Moon", "bw"],
-                ["einstein2", "png", "Einstein", "bw"],
+const IMAGE_PATH = "images/";
+const IMAGES = [["blurry-moon", "png", "Blurry Moon", "bw"],
+                ["einstein", "png", "Einstein", "bw"],
                 ["fruits", "png", "Fruits", "color"],
                 ["head-ct", "png", "Head CT image", "bw"],
-                ["house512", "png", "House", "bw"],
+                ["house", "png", "House", "bw"],
                 ["lena", "png", "Lena", "color"],
                 ["mandril", "png", "Mandril", "color"],
-                ["monarch512", "png", "Monarch", "color"],
+                ["monarch", "png", "Monarch", "color"],
                 ["noise-shape", "png", "Noise shape", "bw"],
                 ["peppers", "png", "Peppers", "color"],
                 ["steam-engine", "png", "Steam engine", "bw"],
@@ -45,6 +45,9 @@ const PARAM = [[4, [7, 21]], [3, [8, 20]], [2, [9, 14]], [2, [5, 15]],
 
 const EDGE_COLOR = [0, 1, 0], LOW_THRES_INTENSITY = 0.4;
 const FLOAT_MIN_VALUE = 0.0, FLOAT_MAX_VALUE = 2.5;
+
+const PARENT_LINK =
+          "<a href='../'>[ <span>Return to the main page</span> ]</a>";
 
 
 
@@ -145,6 +148,12 @@ function init() {
     .catch(function(error) {
       handleException("init", error);
     });
+}
+
+
+
+function refresh(event) {
+  if (event.persisted) window.location.reload();
 }
 
 
@@ -441,7 +450,7 @@ function updateTexture() {
 
       canvas_.style.display = "block";
       html_.enableControls(true, true, true, true, true);
-      html_.clearInfo();
+      html_.setInfo(PARENT_LINK);
 
       render(true);
     }
@@ -807,6 +816,8 @@ function handleException(errorCode, description) {
 
     document.body.removeAttribute("onresize");
     document.body.setAttribute("onresize", null);
+    document.body.removeAttribute("onpageshow");
+    document.body.setAttribute("onpageshow", null);
 
     if (typeof canvas_ !== "undefined")
       canvas_.style.display = "none";
