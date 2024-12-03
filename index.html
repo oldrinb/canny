@@ -1,4 +1,3 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,7 +5,7 @@
     <link rel="icon" type="image/x-icon" href="../common-files/icons/ob.ico">
     <link rel="stylesheet" href="style.css">
     <meta charset="utf-8">
-    <meta name="author" content="Oldrin Bărbulescu">
+    <meta name="author" content="Oldrin Barbulescu">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="../common-files/models/quad/quad.js"></script>
@@ -34,7 +33,8 @@
     <script src="main.js"></script>
   </head>
 
-  <body onload="init()" onbeforeunload="clean()" onresize="resize()">
+  <body onload="init()" onpageshow="refresh(event)" onbeforeunload="clean()"
+      onresize="resize()">
     <noscript>
       <h1>Canny edge detector</h1>
       <p class="error">
@@ -65,7 +65,7 @@
             </div>
           </div>
 
-          <div class="hidden">
+          <div class="step-main">
             <h2>Step:</h2>
 
             <!-- Step selector -->
@@ -125,6 +125,8 @@
               <label for="gauss-smoothing">&sigma; [px]</label>
             </div>
           </div>
+          
+          <div class="hidden"></div>
 
           <!-- Hysteresis thresholding -->
           <div class="control">
